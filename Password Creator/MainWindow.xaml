@@ -41,6 +41,7 @@
             <Setter Property="FontWeight" Value="Light"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Margin" Value="0 5 0 0"/>
+            <Setter Property="Cursor" Value="Hand"/>
         </Style>
         
     </Window.Resources>
@@ -51,21 +52,21 @@
 
             <Slider Name="Slide" ValueChanged="Slider_ValueChanged" Maximum="100" IsSnapToTickEnabled="True"/>
 
-            <TextBox Name="Difficulty" Margin="0 5" Text="Move the Slider"/>
+            <TextBox Name="Difficulty" Margin="0 5" Text="Move the Slider" IsReadOnly="True"/>
 
             <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
                 <TextBlock Text="Number of characters: "/>
-                <TextBlock Name="number"/>
+                <TextBox Name="number"/>
             </StackPanel>
 
-            <StackPanel Margin="10">
-                <CheckBox Name="cLetters" Content="Captial Letters" />
-                <CheckBox Name="sLetters" Content="Small Letters" />
-                <CheckBox Name="numbers" Content="Numbers"/>
-                <CheckBox Name="symbols" Content="Symbols"/>
+            <StackPanel Margin="10" Name="temp">
+                <CheckBox Checked="btnCreateNew_Click" Unchecked="btnCreateNew_Click" Name="cLetters" Content="Captial Letters"/>
+                <CheckBox Checked="btnCreateNew_Click" Unchecked="btnCreateNew_Click" Name="sLetters" Content="Small Letters" />
+                <CheckBox Checked="btnCreateNew_Click" Unchecked="btnCreateNew_Click" Name="numbers" Content="Numbers"/>
+                <CheckBox Checked="btnCreateNew_Click" Unchecked="btnCreateNew_Click" Name="symbols" Content="Symbols"/>
             </StackPanel>
 
-            <TextBox Name="passwordPlace" Margin="0 10"/>
+            <TextBox Name="passwordPlace" Margin="0 10" MouseEnter="passwordPlace_MouseEnter" MouseLeave="passwordPlace_MouseLeave"/>
             <Button Name="btnCreateNew" Content="Create New Password" Click="btnCreateNew_Click"/>
             <Button Name="copier" Content="Click to copy" Click="copier_Click"/>
 

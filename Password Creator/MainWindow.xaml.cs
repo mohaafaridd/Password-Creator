@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Windows;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Password_Creator
 {
@@ -10,9 +15,9 @@ namespace Password_Creator
     {
         #region private members
 
-        Random rnd = new Random();
+        private Random rnd = new Random();
 
-        private char returnedChar;
+        private List<int> availableCharacters = new List<int>();
 
         #endregion
 
@@ -26,6 +31,8 @@ namespace Password_Creator
         }
         #endregion
 
+        #region Slide
+
         /// <summary>
         /// Describes what happens when a user change the slider value 
         /// </summary>
@@ -36,7 +43,7 @@ namespace Password_Creator
 
             // change text to the following
             if (Slide.Value < 8)
-                Difficulty.Text = "Password can't be less than 8 letters";
+                Difficulty.Text = "Too easy";
 
             // Sets the difficulty to Easy
             if (Slide.Value > 8)
@@ -61,78 +68,91 @@ namespace Password_Creator
             createPassword((int)Slide.Value);
         }
 
+        #endregion
+
+        #region Password Creators
         /// <summary>
         /// Creates a password
         /// </summary>
-        /// <param name="value">The value of how long the password should be</param>
+        /// <param name="value">password length</param>
         private void createPassword(int value)
         {
-            // the program will ignore the code if the value is 8
-            if (value < 8)
-                return;
-
-            // Clears the password place
+            // Deletes any former password
             passwordPlace.Text = string.Empty;
 
-            // Loops till the end and randomly choose the char according to which checkboxes the user chose
-            for (int counter = 0; counter < value;)
+            // Add the selected boxes and their values to the list
+            addIndexes(ref availableCharacters);
+
+            // Escape if the list is empty
+            if (availableCharacters.Count == 0)
+                return;
+
+            // Go to the generator
+            generatePassword(availableCharacters, value);
+        }
+
+        /// <summary>
+        /// Generates the password from the given values
+        /// </summary>
+        /// <param name="availableCharacters"></param>
+        /// <param name="value"></param>
+        private void generatePassword(List<int> availableCharacters, int value)
+        {
+            // Loop through the needed length
+            for(int i = 0; i< value; i++)
             {
+                // Creating random index to search in the list with
+                int index = rnd.Next(availableCharacters.Count);
 
-                // Checks if the capital letters checkbox is checked
-                if (cLetters.IsChecked == true)
-                {
-                    counter++;
-                    passwordPlace.Text += generateRandomCharacters(65, 90);
-
-                    if (counter >= value)
-                        break;
-                }
-
-                // Checks if the small letters checkbox is checked
-                if (sLetters.IsChecked == true)
-                {
-                    counter++;
-                    passwordPlace.Text += generateRandomCharacters(97, 122);
-
-                    if (counter >= value)
-                        break;
-                }
-
-                // Checks if the numbers checkbox is checked
-                if (numbers.IsChecked == true)
-                {
-                    counter++;
-                    passwordPlace.Text += generateRandomCharacters(48, 57);
-
-                    if (counter >= value)
-                        break;
-                }
-
-                // Checks if the symbols checkbox is checked
-                if (symbols.IsChecked == true)
-                {
-                    counter++;
-                    passwordPlace.Text += generateRandomCharacters(33, 47);
-
-                    if (counter >= value)
-                        break;
-                }
+                // Adding the chosen character to the textbox - Cast number to ASCII
+                passwordPlace.Text += (char)availableCharacters[index];
 
             }
         }
 
         /// <summary>
-        /// Random choose a random char
+        /// Adding elements to the list depending on the checked boxes
         /// </summary>
-        /// <param name="start">Starting point for ascii code</param>
-        /// <param name="end">Ending point for ascii code</param>
-        /// <returns>The random chosen char</returns>
-        private char generateRandomCharacters(int start, int end)
+        /// <param name="availableCharacters"></param>
+        private void addIndexes(ref List<int> availableCharacters)
         {
-            // returns the char according to this formula
-            return returnedChar = (char)rnd.Next(start, end);
-        }
+            // Clear the list from any element
+            availableCharacters.Clear();
 
+            // Adding ASCII for captial letters
+            if (cLetters.IsChecked == true)
+            {
+                for (int ASCIINumber = 65; ASCIINumber < 91; ASCIINumber++)
+                    availableCharacters.Add(ASCIINumber);
+            }
+
+            // Adding ASCII for small letters
+            if (sLetters.IsChecked == true)
+            {
+                for (int ASCIINumber = 97; ASCIINumber < 123; ASCIINumber++)
+                    availableCharacters.Add(ASCIINumber);
+            }
+
+            // Adding ASCII for number (0-9)
+            if (numbers.IsChecked == true)
+            {
+                for (int ASCIINumber = 48; ASCIINumber < 58; ASCIINumber++)
+                    availableCharacters.Add(ASCIINumber);
+            }
+
+            // Adding ASCII for symbols
+            if (symbols.IsChecked == true)
+            {
+                for (int ASCIINumber = 33; ASCIINumber < 48; ASCIINumber++)
+                    availableCharacters.Add(ASCIINumber);
+            }
+
+
+            availableCharacters.Sort();
+        }
+        #endregion
+
+        #region Helping Buttons
         /// <summary>
         /// Creates new password with the same number of char if the user wanted that
         /// </summary>
@@ -154,6 +174,31 @@ namespace Password_Creator
             // Copy the password
             Clipboard.SetText(passwordPlace.Text);
         }
+        #endregion
 
+        #region Mouse Visual Effects
+        /// <summary>
+        /// Change the color of text when mouse enter the area
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void passwordPlace_MouseEnter(object sender, MouseEventArgs e)
+        {
+            // Change color to Orange
+            passwordPlace.Foreground = Brushes.Orange;
+        }
+
+        /// <summary>
+        /// Change the color of text when mouse leave the area
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void passwordPlace_MouseLeave(object sender, MouseEventArgs e)
+        {
+            // Change color to Black
+            passwordPlace.Foreground = Brushes.Black;
+
+        }
+        #endregion
     }
 }
